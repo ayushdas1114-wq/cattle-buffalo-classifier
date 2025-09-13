@@ -1,0 +1,743 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cattle & Buffalo Identification</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .user-message {background: #e0ffe0; padding:5px; margin:5px 0; border-radius:5px; text-align:right;}
+.bot-message {background: #f0f0f0; padding:5px; margin:5px 0; border-radius:5px; text-align:left;}
+
+
+        :root {
+            --primary-color: #2c6e49;
+            --secondary-color: #4c956c;
+            --accent-color: #fefee3;
+            --light-gray: #f8f9fa;
+            --medium-gray: #e9ecef;
+            --dark-gray: #6c757d;
+            --text-color: #333;
+            --success-color: #28a745;
+            --info-color: #17a2b8;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #fff;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .logo i {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--dark-gray);
+            font-weight: 400;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .stat-card {
+            background-color: var(--light-gray);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card h3 {
+            font-size: 1rem;
+            color: var(--dark-gray);
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .stat-description {
+            font-size: 0.9rem;
+            color: var(--dark-gray);
+            margin-top: 5px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .upload-section, .results-section {
+            background-color: var(--light-gray);
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--medium-gray);
+        }
+
+        .upload-area {
+            border: 2px dashed var(--secondary-color);
+            border-radius: 10px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: rgba(76, 149, 108, 0.05);
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(76, 149, 108, 0.1);
+        }
+
+        .upload-area.dragover {
+            border-color: var(--primary-color);
+            background-color: rgba(76, 149, 108, 0.2);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            margin-bottom: 20px;
+            color: var(--dark-gray);
+        }
+
+        .upload-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #245a3d;
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #3d7a57;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .preview-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .results-placeholder {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--dark-gray);
+        }
+
+        .results-placeholder i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--medium-gray);
+        }
+
+        .result-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .breed-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .confidence {
+            background-color: var(--success-color);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .result-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            font-size: 0.9rem;
+            color: var(--dark-gray);
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            font-weight: bold;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 40px;
+        }
+
+        .action-card {
+            background-color: var(--light-gray);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .action-icon {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .action-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .action-description {
+            font-size: 0.9rem;
+            color: var(--dark-gray);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid var(--primary-color);
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background-color: var(--success-color);
+            color: white;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .quick-actions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        .user-message { background: #e0ffe0; padding: 5px; margin: 5px 0; border-radius: 5px; text-align: right; }
+.bot-message { background: #f0f0f0; padding: 5px; margin: 5px 0; border-radius: 5px; text-align: left; }
+/* Chatbot Button */
+.chatbot-btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 20px;
+    background-color: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.chatbot-btn:hover {
+    background-color: #45a049;
+    cursor: pointer;
+}
+
+/* Optional: Center the button */
+.button-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-cow"></i>
+                <h1>Cattle & Buffalo Identification</h1>
+            </div>
+            <p class="subtitle">AI - Powered Breed Recognition</p>
+        </header>
+
+        <section class="stats-container">
+            <div class="stat-card">
+                <h3>Today's Scans</h3>
+                <div class="stat-value">24</div>
+                <div class="stat-description">Images analyzed, <span style="color: var(--success-color);">+12% vs yesterday</span></div>
+            </div>
+            <div class="stat-card">
+                <h3>Accuracy Rate</h3>
+                <div class="stat-value">94.5%</div>
+                <div class="stat-description">Model performance, <span style="color: var(--success-color);">Excellent</span></div>
+            </div>
+            <div class="stat-card">
+                <h3>Breeds in DB</h3>
+                <div class="stat-value">156</div>
+                <div class="stat-description">Supported breeds</div>
+            </div>
+             
+            <div class="stat-card">
+                <h3>Confirmed</h3>
+                <div class="stat-value">18</div>
+                <div class="stat-description">Verified today, <span style="color: var(--success-color);">+8% accuracy boost</span></div>
+            </div>
+         
+
+        </section>
+       
+<div style="display:flex; justify-content:center; align-items:flex-start; gap:40px; margin-top:20px; flex-wrap:wrap;">
+
+    <!-- Upload Section -->
+    <div style="flex:1; max-width:400px;">
+        
+
+        <form method="POST" enctype="multipart/form-data" style="flex:1; max-width:400px; padding:20px; border:1px solid #ddd; border-radius:10px; background:#f9f9f9; box-shadow:0px 4px 8px rgba(0,0,0,0.1);">
+            <h2 style="text-align:center; color:#2c3e50; font-family:Arial, sans-serif; margin-bottom:20px;">
+            🐄🐃 Upload Image
+        </h2>
+            <input type="file" name="file" required 
+                   style="margin:10px; padding:10px; border:1px solid #ccc; border-radius:6px; width:100%;">
+            <button type="submit" 
+                    style="background:#27ae60; color:white; padding:10px 20px; border:none; border-radius:6px; cursor:pointer; font-size:16px;">
+                Predict
+            </button>
+        </form>
+    </div>
+
+    {% if breed is defined and breed %}
+<section class="results-section" 
+         style="flex:1; max-width:400px; padding:20px; border:1px solid #ddd; border-radius:10px; background:#f9f9f9; box-shadow:0px 4px 8px rgba(0,0,0,0.1);">
+    <h2 style="text-align:center; color:#34495e; font-family:Arial, sans-serif;">Analysis Results</h2>
+    <div class="results-placeholder" id="resultsPlaceholder" style="margin-top:15px; text-align:center;">
+        <h3 style="color:#27ae60; font-family:Arial, sans-serif;">✅ Prediction:</h3>
+        <p style="font-size:18px; color:#2c3e50;"><b>Breed:</b> {{ breed }}</p>
+        <p style="font-size:18px; color:#2c3e50;"><b>Confidence:</b> {{ confidence }}%</p>
+    </div>
+</section>
+{% endif %}
+
+
+
+</div>
+           
+        </main>
+
+        <section class="quick-actions">
+            <div class="action-card" id="viewHistory">
+                <div class="action-icon">
+                    <i class="fas fa-history"></i>
+                </div>
+                <div class="action-title">View History</div>
+                <div class="action-description">See past analysis results</div>
+            </div>
+            <div class="action-card" id="statistics">
+                <div class="action-icon">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <div class="action-title">Statistics</div>
+                <div class="action-description">Detailed performance metrics</div>
+            </div>
+            <div class="action-card" id="bulkUpload">
+                <div class="action-icon">
+                    <i class="fas fa-upload"></i>
+                </div>
+                <div class="action-title">Bulk Upload</div>
+                <div class="action-description">Process multiple images</div>
+            </div>
+            <div class="action-card" id="syncData">
+                <div class="action-icon">
+                    <i class="fas fa-sync-alt"></i>
+                </div>
+                <div class="action-title">Sync Data</div>
+                <div class="action-description">Update breed database</div>
+            </div>
+
+           
+        </section>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <script>
+        async function sendHighChat() {
+    const query = document.getElementById("highChatInput").value;
+    if(!query) return;
+
+    const chatDiv = document.getElementById("chatResponse");
+
+    // Show user message
+    const userMsg = document.createElement("div");
+    userMsg.className = "user-message";
+    userMsg.innerText = query;
+    chatDiv.appendChild(userMsg);
+
+    // Send query to Flask NLP backend
+    const response = await fetch('/high_chatbot', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({query: query})
+    });
+
+    const data = await response.json();
+
+    // Show bot reply
+    const botMsg = document.createElement("div");
+    botMsg.className = "bot-message";
+    botMsg.innerText = data.answer;
+    chatDiv.appendChild(botMsg);
+
+    chatDiv.scrollTop = chatDiv.scrollHeight;
+    document.getElementById("highChatInput").value = "";
+}
+        
+
+        // DOM Elements
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const cameraBtn = document.getElementById('cameraBtn');
+        const galleryBtn = document.getElementById('galleryBtn');
+        const previewContainer = document.getElementById('previewContainer');
+        const previewImage = document.getElementById('previewImage');
+        const resultsPlaceholder = document.getElementById('resultsPlaceholder');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const notification = document.getElementById('notification');
+
+        // Sample breed data for simulation
+        const cattleBreeds = [
+            { name: 'Holstein Friesian', type: 'Cattle', origin: 'Netherlands', characteristics: 'High milk production' },
+            { name: 'Angus', type: 'Cattle', origin: 'Scotland', characteristics: 'Premium beef quality' },
+            { name: 'Hereford', type: 'Cattle', origin: 'England', characteristics: 'Hardy and adaptable' },
+            { name: 'Simmental', type: 'Cattle', origin: 'Switzerland', characteristics: 'Dual-purpose breed' },
+            { name: 'Brahman', type: 'Cattle', origin: 'India', characteristics: 'Heat tolerant' },
+            { name: 'Jersey', type: 'Cattle', origin: 'Jersey Island', characteristics: 'High butterfat milk' },
+            { name: 'Limousin', type: 'Cattle', origin: 'France', characteristics: 'Muscular and lean' },
+            { name: 'Gir', type: 'Cattle', origin: 'India', characteristics: 'Drought resistant' }
+        ];
+
+        const buffaloBreeds = [
+            { name: 'Murrah', type: 'Buffalo', origin: 'India', characteristics: 'High milk yield' },
+            { name: 'Nili-Ravi', type: 'Buffalo', origin: 'Pakistan', characteristics: 'Disease resistant' },
+            { name: 'Mediterranean', type: 'Buffalo', origin: 'Italy', characteristics: 'Dual-purpose breed' },
+            { name: 'Surti', type: 'Buffalo', origin: 'India', characteristics: 'Adaptable to various climates' },
+            { name: 'Bhadawari', type: 'Buffalo', origin: 'India', characteristics: 'High butterfat content' },
+            { name: 'Jaffarabadi', type: 'Buffalo', origin: 'India', characteristics: 'Large body size' },
+            { name: 'Mehsana', type: 'Buffalo', origin: 'India', characteristics: 'Good milk producers' },
+            { name: 'Toda', type: 'Buffalo', origin: 'India', characteristics: 'Mountain adapted' }
+        ];
+
+        // Event Listeners
+        uploadArea.addEventListener('click', () => fileInput.click());
+        galleryBtn.addEventListener('click', () => fileInput.click());
+        cameraBtn.addEventListener('click', triggerCamera);
+
+        fileInput.addEventListener('change', handleFileSelect);
+
+        // Drag and drop functionality
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            
+            if (e.dataTransfer.files.length) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        // Quick actions
+        document.getElementById('viewHistory').addEventListener('click', () => {
+            showNotification('History feature coming soon!');
+        });
+
+        document.getElementById('statistics').addEventListener('click', () => {
+            showNotification('Statistics dashboard coming soon!');
+        });
+
+        document.getElementById('bulkUpload').addEventListener('click', () => {
+            showNotification('Bulk upload feature coming soon!');
+        });
+
+        document.getElementById('syncData').addEventListener('click', () => {
+            showNotification('Data sync initiated successfully!');
+        });
+
+        // Functions
+        function handleFileSelect(e) {
+            if (e.target.files.length) {
+                handleFile(e.target.files[0]);
+            }
+        }
+
+        function handleFile(file) {
+            if (!file.type.match('image.*')) {
+                showNotification('Please select an image file', 'error');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImage.src = e.target.result;
+                previewContainer.style.display = 'block';
+                analyzeImage();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function triggerCamera() {
+            showNotification('Camera feature would open device camera', 'info');
+        }
+
+        function analyzeImage() {
+    resultsPlaceholder.style.display = 'none';
+    loadingIndicator.style.display = 'block';
+    resultsContainer.style.display = 'none';
+
+    const file = fileInput.files[0];
+    if (!file) {
+        showNotification('No image selected', 'error');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    fetch('http://localhost:8000/predict', {  // Update the URL if needed
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('Prediction failed');
+        return response.json();
+    })
+    .then(data => {
+        loadingIndicator.style.display = 'none';
+
+        // Assume backend returns this structure:
+        // { breed: "Holstein Friesian", type: "Cattle", origin: "Netherlands", characteristics: "High milk production", confidence: 92 }
+        displayResults(data, data.confidence);
+    })
+    .catch(err => {
+        loadingIndicator.style.display = 'none';
+        showNotification('Error: ' + err.message, 'error');
+    });
+}
+
+   function displayResults(breed, confidence) {
+    resultsContainer.innerHTML = 
+        <div class="result-card">
+            <div class="result-header">
+                <div class="breed-name">${breed.breed}</div>
+                <div class="confidence">${confidence}%</div>
+            </div>
+            <div class="result-details">
+                <div class="detail-item">
+                    <div class="detail-label">Type</div>
+                    <div class="detail-value">${breed.type}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Origin</div>
+                    <div class="detail-value">${breed.origin}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Characteristics</div>
+                    <div class="detail-value">${breed.characteristics}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Confidence</div>
+                    <div class="detail-value">${confidence}%</div>
+                </div>
+            </div>
+        </div>
+        
+    
+
+    resultsContainer.style.display = 'block';
+    showNotification('Analysis completed successfully!');
+}
+
+
+        function showNotification(message, type = 'success') {
+            notification.textContent = message;
+            notification.className = 'notification show';
+            
+            if (type === 'error') {
+                notification.style.backgroundColor = 'var(--danger-color)';
+            } else if (type === 'info') {
+                notification.style.backgroundColor = 'var(--info-color)';
+            } else {
+                notification.style.backgroundColor = 'var(--success-color)';
+            }
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        
+
+</script>
+
+    
+    
+</body>
+</html>
