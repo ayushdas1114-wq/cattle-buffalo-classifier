@@ -75,3 +75,15 @@ def index():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
+def download_file(url, output_path):
+    if not os.path.exists(output_path) or os.path.getsize(output_path) < 100000:
+        print(f"Downloading {output_path} from Google Drive...")
+        gdown.download(url, output_path, quiet=False)
+        if not os.path.exists(output_path):
+            raise RuntimeError(f"Failed to download {output_path}")
+        file_size = os.path.getsize(output_path)
+        print(f"Downloaded {output_path} — size: {file_size} bytes")
+        if file_size < 100000:
+            raise RuntimeError(f"Downloaded file {output_path} is too small and likely invalid!")
+    else:
+        print(f"{output_path} already exists, skipping download.")
