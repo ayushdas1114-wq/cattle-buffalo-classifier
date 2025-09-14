@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template
-from tensorflow.keras.models import load_model
-from tensorflow.keras.preprocessing import image
+from tensorflow.keras.models import load_model # type: ignore
+from tensorflow.keras.preprocessing import image # type: ignore
 import numpy as np
 import os
 import uuid
@@ -11,10 +11,17 @@ app = Flask(__name__)
 
 # --------------------- Paths ---------------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-MODEL_DIR = os.path.join(BASE_DIR, "saved_models")
-os.makedirs(MODEL_DIR, exist_ok=True)
+import gdown
 
 MODEL_PATH = os.path.join(MODEL_DIR, "cattle_buffalo_resnet50.h5")
+
+if not os.path.exists(MODEL_PATH):
+    print("Model not found locally. Downloading from Google Drive...")
+    url = "https://drive.google.com/uc?id=14bPK0BKC1MAndCVhs8gKrPhWpVHRrMqz"
+    gdown.download(url, MODEL_PATH, quiet=False)
+    print("Model downloaded successfully!")
+
+
 CLASS_INDICES_PATH = os.path.join(MODEL_DIR, "class_indices.txt")
 
 # --------------------- Download Model from Google Drive if Missing ---------------------

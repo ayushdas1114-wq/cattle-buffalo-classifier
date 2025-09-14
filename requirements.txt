@@ -13,3 +13,5 @@ tensorflow-cpu==2.13.1
 
 # Production server
 gunicorn
+
+gdown==4.7.1
