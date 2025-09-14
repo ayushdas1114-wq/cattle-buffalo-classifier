@@ -18,18 +18,20 @@ MODEL_PATH = os.path.join(MODEL_DIR, "cattle_buffalo_resnet50.h5")
 CLASS_INDICES_PATH = os.path.join(MODEL_DIR, "class_indices.txt")
 
 # --------------------- Download Model from Google Drive if Missing ---------------------
-if not os.path.exists(MODEL_PATH):
-    print("Model not found locally. Downloading from Google Drive...")
-    model_url = "https://drive.google.com/uc?id=14bPK0BKC1MAndCVhs8gKrPhWpVHRrMqz"
-    gdown.download(model_url, MODEL_PATH, quiet=False)
-    print("✅ Model downloaded successfully!")
+MODEL_URL = "https://drive.google.com/uc?id=14bPK0BKC1MAndCVhs8gKrPhWpVHRrMqz"
+CLASS_INDICES_URL = "https://drive.google.com/uc?id=1aGqz-jk_0p98ayx6_aapy_GXWzmdjuA6"
 
-# --------------------- Download Class Indices if Missing ---------------------
-if not os.path.exists(CLASS_INDICES_PATH):
-    print("Class indices not found locally. Downloading from Google Drive...")
-    class_url = "https://drive.google.com/uc?id=1aGqz-jk_0p98ayx6_aapy_GXWzmdjuA6"
-    gdown.download(class_url, CLASS_INDICES_PATH, quiet=False)
-    print("✅ Class indices downloaded successfully!")
+def download_file(url, output_path):
+    if not os.path.exists(output_path) or os.path.getsize(output_path) < 100000:
+        print(f"Downloading {output_path} from Google Drive...")
+        gdown.download(url, output_path, quiet=False)
+        if not os.path.exists(output_path) or os.path.getsize(output_path) < 100000:
+            raise RuntimeError(f"Download failed or incomplete for {output_path}")
+    else:
+        print(f"{output_path} already exists, skipping download.")
+
+download_file(MODEL_URL, MODEL_PATH)
+download_file(CLASS_INDICES_URL, CLASS_INDICES_PATH)
 
 # --------------------- Load Model ---------------------
 model = load_model(MODEL_PATH)
@@ -44,7 +46,7 @@ with open(CLASS_INDICES_PATH) as f:
 
 class_names = [class_indices[i] for i in sorted(class_indices.keys())]
 
-IMG_SIZE = (224, 224)  # Change if your model expects a different input size
+IMG_SIZE = (224, 224)  # Adjust if your model expects a different size
 
 # --------------------- Routes ---------------------
 @app.route("/", methods=["GET", "POST"])
