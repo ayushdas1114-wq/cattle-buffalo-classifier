@@ -9,6 +9,6 @@ requests==2.31.0
 
 # ML / TensorFlow
 numpy==1.25.2
-tensorflow==2.13.1
+tensorflow-cpu==2.13.1
 
 gunicorn
