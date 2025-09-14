@@ -19,7 +19,7 @@ CLASS_INDICES_PATH = os.path.join(MODEL_DIR, "class_indices.txt")
 
 # --------------------- Download Model from Google Drive if Missing ---------------------
 # Replace this with your file's Google Drive direct download URL
-MODEL_GDRIVE_URL = "https://drive.google.com/file/d/14bPK0BKC1MAndCVhs8gKrPhWpVHRrMqz/view?usp=drive_link"
+MODEL_GDRIVE_URL = "https://drive.google.com/uc?id=14bPK0BKC1MAndCVhs8gKrPhWpVHRrMqz&export=download"
 
 if not os.path.exists(MODEL_PATH):
     print("Model not found locally. Downloading from Google Drive...")
