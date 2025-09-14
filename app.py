@@ -3,8 +3,8 @@ from tensorflow.keras.models import load_model  # type: ignore
 from tensorflow.keras.preprocessing import image  # type: ignore
 import numpy as np
 import os
-import uuid
 import gdown
+from io import BytesIO
 
 # --------------------- Flask App ---------------------
 app = Flask(__name__)
@@ -20,18 +20,22 @@ CLASS_INDICES_PATH = os.path.join(MODEL_DIR, "class_indices.txt")
 # --------------------- Download Model from Google Drive if Missing ---------------------
 if not os.path.exists(MODEL_PATH):
     print("Model not found locally. Downloading from Google Drive...")
-    url = "https://drive.google.com/uc?id=14bPK0BKC1MAndCVhs8gKrPhWpVHRrMqz"
-    gdown.download(url, MODEL_PATH, quiet=False)
+    model_url = "https://drive.google.com/uc?id=14bPK0BKC1MAndCVhs8gKrPhWpVHRrMqz"
+    gdown.download(model_url, MODEL_PATH, quiet=False)
     print("✅ Model downloaded successfully!")
+
+# --------------------- Download Class Indices if Missing ---------------------
+if not os.path.exists(CLASS_INDICES_PATH):
+    print("Class indices not found locally. Downloading from Google Drive...")
+    class_url = "https://drive.google.com/uc?id=1aGqz-jk_0p98ayx6_aapy_GXWzmdjuA6"
+    gdown.download(class_url, CLASS_INDICES_PATH, quiet=False)
+    print("✅ Class indices downloaded successfully!")
 
 # --------------------- Load Model ---------------------
 model = load_model(MODEL_PATH)
 print("✅ Model loaded successfully!")
 
 # --------------------- Load Class Labels ---------------------
-if not os.path.exists(CLASS_INDICES_PATH):
-    raise FileNotFoundError(f"❌ Class indices file not found at {CLASS_INDICES_PATH}.")
-
 class_indices = {}
 with open(CLASS_INDICES_PATH) as f:
     for line in f:
@@ -40,36 +44,30 @@ with open(CLASS_INDICES_PATH) as f:
 
 class_names = [class_indices[i] for i in sorted(class_indices.keys())]
 
-IMG_SIZE = (224, 224)
-
-# --------------------- Prediction Function ---------------------
-def predict_breed(img_path):
-    img = image.load_img(img_path, target_size=IMG_SIZE)
-    img_array = image.img_to_array(img) / 255.0
-    img_array = np.expand_dims(img_array, axis=0)
-    preds = model.predict(img_array)
-    pred_idx = np.argmax(preds, axis=1)[0]
-    confidence = float(np.max(preds))
-    return class_names[pred_idx], round(confidence * 100, 2)
+IMG_SIZE = (224, 224)  # Change if your model expects a different input size
 
 # --------------------- Routes ---------------------
 @app.route("/", methods=["GET", "POST"])
 def index():
-    breed, confidence = None, None
+    prediction = None
+    confidence = None
 
     if request.method == "POST":
         file = request.files.get("file")
         if file and file.filename:
-            os.makedirs("uploads", exist_ok=True)
-            unique_filename = f"{uuid.uuid4()}_{file.filename}"
-            filepath = os.path.join("uploads", unique_filename)
-            file.save(filepath)
-            breed, confidence = predict_breed(filepath)
-            os.remove(filepath)  # delete file after prediction
-        else:
-            return "❌ No file uploaded or empty filename"
+            # Read image directly in memory
+            img_bytes = file.read()
+            img = image.load_img(BytesIO(img_bytes), target_size=IMG_SIZE)
+            img_array = image.img_to_array(img) / 255.0
+            img_array = np.expand_dims(img_array, axis=0)
 
-    return render_template("index.html", breed=breed, confidence=confidence)
+            # Predict
+            preds = model.predict(img_array)
+            pred_idx = np.argmax(preds, axis=1)[0]
+            confidence = round(float(np.max(preds)) * 100, 2)
+            prediction = class_names[pred_idx]
+
+    return render_template("index.html", prediction=prediction, confidence=confidence)
 
 # --------------------- Run App ---------------------
 if __name__ == "__main__":
